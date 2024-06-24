@@ -1,16 +1,27 @@
+import { useState } from 'react';
+// import Jobs from '../jobs';
 import './index.css';
 
 const Login = () => {
 
+    const [allValues , setValues] = useState({
+        username : "",
+        password : "",
+        showErrorMsg:false,
+        errorMsg:""
+    });
+
     const onSubmitUserDetails = async(event) =>{
         event.preventDefault();
+        // console.log(allValues.username);
+        // console.log(allValues.password);
         // alert("hiii");   
 
         let api = "https://apis.ccbp.in/login";
 
         let userDetails = {
-            username: "rahul",
-            password: "rahul@2021"
+            username: allValues.username,
+            password: allValues.password
         }
         
         const options = {
@@ -21,15 +32,22 @@ const Login = () => {
         let  response = await fetch(api , options);
             //  console.log(response);
         let data = await response.json();
-        console.log(data.jwt_token);
+        if(response.ok === true){
+            setValues({...allValues,showErrorMsg:false , errorMsg:""});
+            console.log(data.jwt_token);
+
+        }else{
+            setValues({...allValues,showErrorMsg:true , errorMsg:data.error_msg});
+        }
+
     }
 
     const onchangeUsername = (e) =>{
-        console.log(e.target.value);
+        console.log({...allValues , username : e.target.value});
     }
 
     const onchangePassword = (e) =>{
-        console.log(e.target.value);
+        console.log({...allValues , password: e.target.value});
 
     }
 
@@ -47,6 +65,11 @@ const Login = () => {
                     <input type="password" className="form-control" id="exampleInputPassword1" onChange={onchangePassword} />
                 </div>
                 <button type="submit" className="btn btn-primary">Submit</button>
+                <br />
+                <br />
+                {
+                    allValues.showErrorMsg ? (<p className='text-danger'> {allValues.errorMsg} </p>) : null
+                }
             </form>
         </div>
     )
